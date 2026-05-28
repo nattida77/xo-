@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON XO</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-x: #00f5ff;
+    --neon-o: #ff2d78;
+    --neon-green: #39ff14;
+    --neon-purple: #bf5fff;
+    --neon-yellow: #fff01f;
+    --bg: #030310;
+    --bg2: #080820;
+    --panel: rgba(10,10,40,0.85);
+    --border: rgba(100,100,255,0.25);
+    --glow-x: 0 0 8px #00f5ff, 0 0 24px #00f5ff55, 0 0 60px #00f5ff22;
+    --glow-o: 0 0 8px #ff2d78, 0 0 24px #ff2d7855, 0 0 60px #ff2d7822;
+    --glow-green: 0 0 8px #39ff14, 0 0 24px #39ff1455;
+    --glow-btn: 0 0 12px #bf5fff88, 0 0 30px #bf5fff33;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    font-family: 'Share Tech Mono', monospace;
+    color: #ccd;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === STARS BACKGROUND === */
+  #stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(0,245,255,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 30%, rgba(255,45,120,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 80%, rgba(191,95,255,0.04) 0%, transparent 50%);
+  }
+  #stars::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 70% 25%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 85% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+      radial-gradient(1px 1px at 10% 85%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 50%, rgba(0,245,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 80%, rgba(255,45,120,0.5) 0%, transparent 100%);
+  }
+
+  /* === SCANLINES === */
+  #scanlines {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+    animation: scan 8s linear infinite;
+  }
+  @keyframes scan {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100px; }
+  }
+
+  /* === LAYOUT === */
+  .app {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh; padding: 20px 16px 40px;
+  }
+
+  /* === TITLE === */
+  .title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 900;
+    letter-spacing: 12px;
+    text-align: center;
+    margin-bottom: 4px;
+    background: linear-gradient(90deg, var(--neon-x), var(--neon-purple), var(--neon-o));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(191,95,255,0.5));
+    animation: titlePulse 3s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(191,95,255,0.5)); }
+    50% { filter: drop-shadow(0 0 40px rgba(191,95,255,0.9)); }
+  }
+  .subtitle {
+    font-size: 11px; letter-spacing: 6px; color: rgba(150,150,200,0.6);
+    margin-bottom: 24px; text-transform: uppercase;
+  }
+
+  /* === MODE TABS === */
+  .mode-tabs {
+    display: flex; gap: 0; margin-bottom: 24px;
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .tab {
+    padding: 9px 22px; font-family: 'Orbitron', monospace; font-size: 11px;
+    letter-spacing: 2px; cursor: pointer; transition: all 0.2s;
+    background: transparent; border: none; color: rgba(150,150,200,0.6);
+  }
+  .tab:hover { color: var(--neon-purple); background: rgba(191,95,255,0.08); }
+  .tab.active {
+    background: rgba(191,95,255,0.15); color: var(--neon-purple);
+    box-shadow: inset 0 0 20px rgba(191,95,255,0.1), 0 0 20px rgba(191,95,255,0.2);
+    text-shadow: 0 0 10px var(--neon-purple);
+  }
+
+  /* === PANELS === */
+  .screen { width: 100%; max-width: 440px; display: none; flex-direction: column; align-items: center; gap: 16px; }
+  .screen.active { display: flex; }
+
+  .panel {
+    width: 100%; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; backdrop-filter: blur(10px);
+  }
+
+  /* === SCORE BOARD === */
+  .scoreboard {
+    display: flex; justify-content: space-around; align-items: center; width: 100%;
+  }
+  .score-item { text-align: center; }
+  .score-label { font-size: 11px; letter-spacing: 3px; color: rgba(150,150,200,0.5); margin-bottom: 4px; }
+  .score-num {
+    font-family: 'Orbitron', monospace; font-size: 32px; font-weight: 700;
+    transition: all 0.3s;
+  }
+  .score-num.x-color { color: var(--neon-x); text-shadow: var(--glow-x); }
+  .score-num.o-color { color: var(--neon-o); text-shadow: var(--glow-o); }
+  .score-num.d-color { color: rgba(150,150,200,0.5); }
+  .score-divider { font-size: 20px; color: var(--border); }
+
+  /* === STATUS === */
+  .status-bar {
+    font-family: 'Orbitron', monospace; font-size: 13px; letter-spacing: 2px;
+    text-align: center; padding: 10px 16px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: rgba(0,0,0,0.3); width: 100%; min-height: 42px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+
+  /* === BOARD === */
+  .board-wrap { position: relative; }
+  .board {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; padding: 10px;
+    background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .cell {
+    width: 100px; height: 100px;
+    background: rgba(5,5,25,0.8);
+    border: 1px solid rgba(100,100,255,0.2);
+    border-radius: 10px; cursor: pointer;
+    font-family: 'Orbitron', monospace; font-size: 42px; font-weight: 900;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; user-select: none; position: relative; overflow: hidden;
+  }
+  .cell::before {
+    content: ''; position: absolute; inset: 0; opacity: 0;
+    transition: opacity 0.2s;
+    background: radial-gradient(circle at center, rgba(191,95,255,0.15) 0%, transparent 70%);
+  }
+  .cell:hover:not(.taken)::before { opacity: 1; }
+  .cell:hover:not(.taken) {
+    border-color: rgba(191,95,255,0.5);
+    box-shadow: 0 0 15px rgba(191,95,255,0.2), inset 0 0 15px rgba(191,95,255,0.05);
+    transform: scale(1.02);
+  }
+  .cell.x-mark {
+    color: var(--neon-x);
+    text-shadow: var(--glow-x);
+    border-color: rgba(0,245,255,0.3);
+    animation: markAppear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .cell.o-mark {
+    color: var(--neon-o);
+    text-shadow: var(--glow-o);
+    border-color: rgba(255,45,120,0.3);
+    animation: markAppear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .cell.win-cell {
+    animation: winPulse 0.6s ease-out forwards;
+  }
+  .cell.x-mark.win-cell { box-shadow: 0 0 30px var(--neon-x), inset 0 0 20px rgba(0,245,255,0.15); background: rgba(0,245,255,0.08); }
+  .cell.o-mark.win-cell { box-shadow: 0 0 30px var(--neon-o), inset 0 0 20px rgba(255,45,120,0.15); background: rgba(255,45,120,0.08); }
+  @keyframes markAppear {
+    0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes winPulse {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.12); }
+    60% { transform: scale(0.96); }
+    100% { transform: scale(1); }
+  }
+
+  /* === WIN LINE === */
+  .win-line-svg {
+    position: absolute; top: 10px; left: 10px; pointer-events: none;
+    width: calc(100% - 20px); height: calc(100% - 20px);
+  }
+
+  /* === BUTTONS === */
+  .btn {
+    font-family: 'Orbitron', monospace; font-size: 12px; letter-spacing: 2px;
+    padding: 11px 28px; border-radius: 8px; cursor: pointer;
+    transition: all 0.2s; text-transform: uppercase;
+    background: rgba(191,95,255,0.1); color: var(--neon-purple);
+    border: 1px solid rgba(191,95,255,0.4);
+  }
+  .btn:hover {
+    background: rgba(191,95,255,0.2);
+    box-shadow: var(--glow-btn);
+    transform: translateY(-1px);
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn.btn-x { background: rgba(0,245,255,0.1); color: var(--neon-x); border-color: rgba(0,245,255,0.4); }
+  .btn.btn-x:hover { background: rgba(0,245,255,0.2); box-shadow: var(--glow-x); }
+  .btn.btn-o { background: rgba(255,45,120,0.1); color: var(--neon-o); border-color: rgba(255,45,120,0.4); }
+  .btn.btn-o:hover { background: rgba(255,45,120,0.2); box-shadow: var(--glow-o); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  /* === INPUT === */
+  .input-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .input-label { font-size: 11px; letter-spacing: 3px; color: rgba(150,150,200,0.5); }
+  .neon-input {
+    width: 100%; background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(100,100,255,0.3); border-radius: 8px;
+    color: var(--neon-purple); font-family: 'Orbitron', monospace; font-size: 20px;
+    padding: 12px 16px; letter-spacing: 6px; text-align: center;
+    outline: none; transition: all 0.2s;
+  }
+  .neon-input:focus {
+    border-color: var(--neon-purple);
+    box-shadow: 0 0 20px rgba(191,95,255,0.3), inset 0 0 10px rgba(191,95,255,0.05);
+    text-shadow: 0 0 10px var(--neon-purple);
+  }
+  .neon-input::placeholder { color: rgba(191,95,255,0.2); letter-spacing: 3px; font-size: 14px; }
+
+  /* === ROOM CODE === */
+  .room-display {
+    width: 100%; text-align: center; padding: 16px;
+    background: rgba(0,0,0,0.4); border: 1px solid rgba(57,255,20,0.3);
+    border-radius: 10px;
+  }
+  .room-label { font-size: 10px; letter-spacing: 4px; color: rgba(57,255,20,0.5); margin-bottom: 6px; }
+  .room-code {
+    font-family: 'Orbitron', monospace; font-size: 36px; font-weight: 700;
+    color: var(--neon-green); text-shadow: var(--glow-green); letter-spacing: 10px;
+  }
+  .room-tip { font-size: 11px; color: rgba(150,150,200,0.4); margin-top: 6px; }
+
+  /* === CONNECTION STATUS === */
+  .conn-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 20px; font-size: 11px; letter-spacing: 2px;
+    border: 1px solid; margin-bottom: 4px;
+  }
+  .conn-badge.waiting { border-color: rgba(255,240,31,0.4); color: var(--neon-yellow); background: rgba(255,240,31,0.08); }
+  .conn-badge.connected { border-color: rgba(57,255,20,0.4); color: var(--neon-green); background: rgba(57,255,20,0.08); }
+  .conn-badge.error { border-color: rgba(255,45,120,0.4); color: var(--neon-o); background: rgba(255,45,120,0.08); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+  /* === ONLINE LOBBY === */
+  .lobby-section { display: flex; flex-direction: column; gap: 10px; }
+  .lobby-divider { text-align: center; color: rgba(100,100,200,0.3); font-size: 11px; letter-spacing: 4px; padding: 4px 0; }
+
+  /* === TURN INDICATOR === */
+  .turn-indicator {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Orbitron', monospace; font-size: 13px;
+  }
+  .turn-mark { font-size: 18px; font-weight: 900; }
+  .turn-mark.x { color: var(--neon-x); text-shadow: var(--glow-x); }
+  .turn-mark.o { color: var(--neon-o); text-shadow: var(--glow-o); }
+
+  /* === PARTICLE CANVAS === */
+  #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+  /* === NOTIFICATION === */
+  .notif {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: rgba(10,10,40,0.95); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 24px;
+    font-family: 'Orbitron', monospace; font-size: 12px; letter-spacing: 2px;
+    z-index: 100; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    white-space: nowrap;
+  }
+  .notif.show { transform: translateX(-50%) translateY(0); }
+
+  /* === ONLINE INDICATOR === */
+  .my-symbol-badge {
+    font-size: 11px; letter-spacing: 2px; color: rgba(150,150,200,0.5);
+    text-align: center; padding: 4px;
+  }
+  .my-symbol-badge span { font-family: 'Orbitron', monospace; font-weight: 700; }
+  .my-symbol-badge .sx { color: var(--neon-x); text-shadow: var(--glow-x); }
+  .my-symbol-badge .so { color: var(--neon-o); text-shadow: var(--glow-o); }
+
+  @media (max-width: 380px) {
+    .cell { width: 85px; height: 85px; font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<canvas id="particles"></canvas>
+<div id="scanlines"></div>
+
+<div class="app">
+  <div class="title">NEON XO</div>
+  <div class="subtitle">CYBERPUNK EDITION</div>
+
+  <!-- MODE TABS -->
+  <div class="mode-tabs">
+    <button class="tab active" onclick="switchTab('local')">LOCAL</button>
+    <button class="tab" onclick="switchTab('ai')">VS AI</button>
+    <button class="tab" onclick="switchTab('online')">ONLINE</button>
+  </div>
+
+  <!-- === LOCAL 2P === -->
+  <div id="screen-local" class="screen active">
+    <div class="panel">
+      <div class="scoreboard">
+        <div class="score-item">
+          <div class="score-label">PLAYER X</div>
+          <div class="score-num x-color" id="l-sx">0</div>
+        </div>
+        <div class="score-divider">:</div>
+        <div class="score-item">
+          <div class="score-label">DRAW</div>
+          <div class="score-num d-color" id="l-sd">0</div>
+        </div>
+        <div class="score-divider">:</div>
+        <div class="score-item">
+          <div class="score-label">PLAYER O</div>
+          <div class="score-num o-color" id="l-so">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="status-bar" id="l-status">
+      <div class="turn-indicator"><span class="turn-mark x">X</span><span> — ตาของคุณ</span></div>
+    </div>
+    <div class="board-wrap">
+      <div class="board" id="l-board"></div>
+      <svg class="win-line-svg" id="l-svg" viewBox="0 0 320 320"></svg>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="resetGame('local')">⟳ เริ่มใหม่</button>
+      <button class="btn" style="font-size:11px" onclick="resetScore('local')">รีเซ็ตคะแนน</button>
+    </div>
+  </div>
+
+  <!-- === VS AI === -->
+  <div id="screen-ai" class="screen">
+    <div class="panel">
+      <div class="scoreboard">
+        <div class="score-item">
+          <div class="score-label">YOU (X)</div>
+          <div class="score-num x-color" id="a-sx">0</div>
+        </div>
+        <div class="score-divider">:</div>
+        <div class="score-item">
+          <div class="score-label">DRAW</div>
+          <div class="score-num d-color" id="a-sd">0</div>
+        </div>
+        <div class="score-divider">:</div>
+        <div class="score-item">
+          <div class="score-label">AI (O)</div>
+          <div class="score-num o-color" id="a-so">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="status-bar" id="a-status">
+      <div class="turn-indicator"><span class="turn-mark x">X</span><span> — ตาของคุณ</span></div>
+    </div>
+    <div class="board-wrap">
+      <div class="board" id="a-board"></div>
+      <svg class="win-line-svg" id="a-svg" viewBox="0 0 320 320"></svg>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="resetGame('ai')">⟳ เริ่มใหม่</button>
+      <button class="btn" style="font-size:11px" onclick="resetScore('ai')">รีเซ็ตคะแนน</button>
+    </div>
+  </div>
+
+  <!-- === ONLINE === -->
+  <div id="screen-online" class="screen">
+    <div class="panel lobby-section" id="online-lobby">
+      <div style="text-align:center; margin-bottom:4px;">
+        <div style="font-family:'Orbitron',monospace; font-size:13px; letter-spacing:3px; color:rgba(150,150,200,0.6);">MULTIPLAYER ONLINE</div>
+        <div style="font-size:11px; color:rgba(100,100,180,0.4); margin-top:4px;">เชื่อมต่อผ่าน BroadcastChannel (same browser)</div>
+      </div>
+      <button class="btn btn-x" onclick="createRoom()" style="width:100%">＋ สร้างห้องใหม่</button>
+      <div class="lobby-divider">— หรือ —</div>
+      <div class="input-group">
+        <div class="input-label">รหัสห้อง (4 หลัก)</div>
+        <input class="neon-input" id="join-code" maxlength="4" placeholder="XXXX" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <button class="btn btn-o" onclick="joinRoom()" style="width:100%">→ เข้าร่วมห้อง</button>
+      <div style="font-size:11px; color:rgba(100,100,180,0.4); text-align:center; padding-top:4px;">
+        💡 เปิด 2 แท็บในเบราว์เซอร์เดียวกัน แล้วใช้รหัสห้องเพื่อเชื่อมต่อ
+      </div>
+    </div>
+
+    <div id="online-game-area" style="display:none; flex-direction:column; align-items:center; gap:14px; width:100%">
+      <div class="panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <div id="o-room-show" class="room-display" style="flex:1; min-width:140px; padding:10px 12px;">
+          <div class="room-label">ROOM</div>
+          <div class="room-code" id="o-room-code">----</div>
+        </div>
+        <div style="flex:1; min-width:140px; text-align:center;">
+          <div id="o-conn-badge" class="conn-badge waiting"><div class="dot"></div><span id="o-conn-text">รอผู้เล่น 2...</span></div>
+          <div id="o-my-symbol" class="my-symbol-badge"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="scoreboard">
+          <div class="score-item">
+            <div class="score-label">PLAYER X</div>
+            <div class="score-num x-color" id="o-sx">0</div>
+          </div>
+          <div class="score-divider">:</div>
+          <div class="score-item">
+            <div class="score-label">DRAW</div>
+            <div class="score-num d-color" id="o-sd">0</div>
+          </div>
+          <div class="score-divider">:</div>
+          <div class="score-item">
+            <div class="score-label">PLAYER O</div>
+            <div class="score-num o-color" id="o-so">0</div>
+          </div>
+        </div>
+      </div>
+      <div class="status-bar" id="o-status">
+        <div class="turn-indicator"><span class="turn-mark x">X</span><span> กำลังรอ...</span></div>
+      </div>
+      <div class="board-wrap">
+        <div class="board" id="o-board"></div>
+        <svg class="win-line-svg" id="o-svg" viewBox="0 0 320 320"></svg>
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="onlineReset()">⟳ เริ่มใหม่</button>
+        <button class="btn" style="color:rgba(255,45,120,0.7); border-color:rgba(255,45,120,0.3)" onclick="leaveRoom()">✕ ออกจากห้อง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif"></div>
+
+<script>
+// ======== AUDIO ENGINE ========
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+function getACtx() { if (!actx) actx = new AudioCtx(); return actx; }
+
+function playTone(freq, type, duration, vol = 0.3, attack = 0.01, release = 0.15) {
+  try {
+    const ctx = getACtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + attack);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(); osc.stop(ctx.currentTime + duration + 0.05);
+  } catch(e) {}
+}
+
+const SFX = {
+  click() {
+    playTone(440, 'sine', 0.08, 0.15);
+    setTimeout(() => playTone(660, 'sine', 0.06, 0.1), 40);
+  },
+  place(isX) {
+    const freq = isX ? [523, 659] : [392, 494];
+    playTone(freq[0], 'triangle', 0.1, 0.2);
+    setTimeout(() => playTone(freq[1], 'triangle', 0.12, 0.18), 60);
+    setTimeout(() => { playTone(freq[1]*2, 'sine', 0.08, 0.1, 0.005, 0.08); }, 100);
+  },
+  win() {
+    const seq = [523, 659, 784, 1047];
+    seq.forEach((f,i) => setTimeout(() => playTone(f, 'triangle', 0.18, 0.25), i * 90));
+    setTimeout(() => playTone(1047, 'sine', 0.5, 0.3, 0.01, 0.4), 400);
+  },
+  draw() {
+    playTone(330, 'sawtooth', 0.15, 0.15);
+    setTimeout(() => playTone(294, 'sawtooth', 0.12, 0.12), 100);
+    setTimeout(() => playTone(262, 'sawtooth', 0.1, 0.1), 200);
+  },
+  error() { playTone(200, 'sawtooth', 0.15, 0.2); },
+  join() {
+    playTone(440, 'sine', 0.1, 0.2);
+    setTimeout(() => playTone(880, 'sine', 0.15, 0.25), 80);
+  }
+};
+
+// ======== PARTICLES ========
+const pCanvas = document.getElementById('particles');
+const pCtx = pCanvas.getContext('2d');
+let particles = [];
+
+function resizeCanvas() {
+  pCanvas.width = window.innerWidth;
+  pCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function spawnParticles(x, y, color, count = 12) {
+  const rect = pCanvas.getBoundingClientRect();
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
+    const speed = 1.5 + Math.random() * 3;
+    particles.push({
+      x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+      life: 1, decay: 0.02 + Math.random() * 0.02,
+      size: 2 + Math.random() * 3, color
+    });
+  }
+}
+
+function animParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.06; p.life -= p.decay;
+    pCtx.save();
+    pCtx.globalAlpha = p.life;
+    pCtx.fillStyle = p.color;
+    pCtx.shadowColor = p.color; pCtx.shadowBlur = 6;
+    pCtx.beginPath();
+    pCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+    pCtx.fill();
+    pCtx.restore();
+  });
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+function burstAtCell(cellEl, color) {
+  const r = cellEl.getBoundingClientRect();
+  spawnParticles(r.left + r.width / 2, r.top + r.height / 2, color, 16);
+}
+
+// ======== NOTIFICATION ========
+let notifTimer;
+function showNotif(msg, color = '#bf5fff') {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.style.color = color;
+  el.style.borderColor = color + '55';
+  el.style.boxShadow = `0 0 20px ${color}44`;
+  el.classList.add('show');
+  clearTimeout(notifTimer);
+  notifTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ======== GAME CORE ========
+const WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+const states = {
+  local: { board: Array(9).fill(null), current: 'X', over: false, scores: { X:0,O:0,D:0 } },
+  ai:    { board: Array(9).fill(null), current: 'X', over: false, scores: { X:0,O:0,D:0 } },
+  online:{ board: Array(9).fill(null), current: 'X', over: false, scores: { X:0,O:0,D:0 } }
+};
+
+function checkWin(board, p) {
+  return WINS.find(line => line.every(i => board[i] === p)) || null;
+}
+
+function renderBoard(mode) {
+  const s = states[mode];
+  const el = document.getElementById(mode[0] + '-board');
+  el.innerHTML = '';
+  s.board.forEach((v, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (v ? ' taken' : '') + (v === 'X' ? ' x-mark' : v === 'O' ? ' o-mark' : '');
+    cell.textContent = v || '';
+    cell.dataset.i = i;
+    if (!v && !s.over) {
+      cell.onclick = () => handleClick(mode, i, cell);
+    }
+    el.appendChild(cell);
+  });
+}
+
+function handleClick(mode, i, cellEl) {
+  if (mode === 'online') { onlinePlay(i); return; }
+  const s = states[mode];
+  if (s.over || s.board[i]) return;
+  SFX.place(s.current === 'X');
+  s.board[i] = s.current;
+  const color = s.current === 'X' ? '#00f5ff' : '#ff2d78';
+  burstAtCell(cellEl, color);
+  renderBoard(mode);
+  processResult(mode);
+  if (mode === 'ai' && !s.over && s.current === 'O') {
+    setTimeout(() => aiMove(), 400);
+  }
+}
+
+function processResult(mode) {
+  const s = states[mode];
+  const line = checkWin(s.board, s.current);
+  const prefix = mode[0];
+  if (line) {
+    s.over = true; s.scores[s.current]++;
+    updateScore(mode);
+    SFX.win();
+    markWinCells(mode, line, s.current);
+    drawWinLine(mode, line, s.current);
+    const msg = s.current === 'X' ? `<span style="color:var(--neon-x);text-shadow:var(--glow-x)">X ชนะ! 🏆</span>` : `<span style="color:var(--neon-o);text-shadow:var(--glow-o)">O ชนะ! 🏆</span>`;
+    document.getElementById(prefix + '-status').innerHTML = `<div class="turn-indicator">${msg}</div>`;
+    showNotif(s.current + ' WIN!', s.current === 'X' ? '#00f5ff' : '#ff2d78');
+    return;
+  }
+  if (s.board.every(v => v)) {
+    s.over = true; s.scores.D++;
+    updateScore(mode); SFX.draw();
+    document.getElementById(prefix + '-status').innerHTML = '<div>เสมอ — DRAW</div>';
+    showNotif('DRAW!', '#fff01f');
+    return;
+  }
+  s.current = s.current === 'X' ? 'O' : 'X';
+  updateStatusTurn(mode);
+}
+
+function updateStatusTurn(mode) {
+  const s = states[mode];
+  const prefix = mode[0];
+  const mark = `<span class="turn-mark ${s.current.toLowerCase()}">${s.current}</span>`;
+  let label = ' — ตาของคุณ';
+  if (mode === 'ai' && s.current === 'O') label = ' — AI กำลังคิด...';
+  if (mode === 'online') {
+    if (s.current === onlineState.mySymbol) label = ' — ตาของคุณ';
+    else label = ' — รอคู่แข่ง...';
+  }
+  document.getElementById(prefix + '-status').innerHTML = `<div class="turn-indicator">${mark}<span>${label}</span></div>`;
+}
+
+function markWinCells(mode, line, player) {
+  const el = document.getElementById(mode[0] + '-board');
+  line.forEach(i => el.children[i].classList.add('win-cell'));
+}
+
+function drawWinLine(mode, line, player) {
+  const svg = document.getElementById(mode[0] + '-svg');
+  const cellSize = 110;
+  const cols = [55, 165, 275];
+  const rows = [55, 165, 275];
+  const [a, , c] = line;
+  const x1 = cols[a % 3], y1 = rows[Math.floor(a / 3)];
+  const x2 = cols[c % 3], y2 = rows[Math.floor(c / 3)];
+  const color = player === 'X' ? '#00f5ff' : '#ff2d78';
+  const glow = player === 'X' ? '#00f5ff' : '#ff2d78';
+  svg.innerHTML = `
+    <defs>
+      <filter id="gf">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="${color}" stroke-width="4" stroke-linecap="round" filter="url(#gf)" opacity="0.9">
+      <animate attributeName="x2" from="${x1}" to="${x2}" dur="0.3s" fill="freeze"/>
+      <animate attributeName="y2" from="${y1}" to="${y2}" dur="0.3s" fill="freeze"/>
+    </line>`;
+}
+
+function updateScore(mode) {
+  const s = states[mode]; const p = mode[0];
+  document.getElementById(p + '-sx').textContent = s.scores.X;
+  document.getElementById(p + '-so').textContent = s.scores.O;
+  document.getElementById(p + '-sd').textContent = s.scores.D;
+  // bounce animation
+  [p+'-sx', p+'-so', p+'-sd'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.transform = 'scale(1.4)';
+    setTimeout(() => el.style.transform = '', 200);
+  });
+}
+
+function resetGame(mode) {
+  const s = states[mode];
+  s.board = Array(9).fill(null); s.current = 'X'; s.over = false;
+  const prefix = mode[0];
+  document.getElementById(prefix + '-svg').innerHTML = '';
+  renderBoard(mode);
+  const mark = `<span class="turn-mark x">X</span>`;
+  if (mode === 'online') {
+    onlineSend({ type: 'reset', scores: s.scores });
+    updateStatusTurn(mode);
+  } else {
+    document.getElementById(prefix + '-status').innerHTML = `<div class="turn-indicator">${mark}<span> — ตาของคุณ</span></div>`;
+  }
+  SFX.click();
+}
+
+function resetScore(mode) {
+  states[mode].scores = { X:0, O:0, D:0 };
+  updateScore(mode); SFX.click();
+}
+
+// ======== AI (Minimax) ========
+function aiMove() {
+  const s = states['ai'];
+  if (s.over) return;
+  const move = bestMove(s.board);
+  if (move < 0) return;
+  s.board[move] = 'O';
+  const cellEl = document.getElementById('a-board').children[move];
+  burstAtCell(cellEl, '#ff2d78');
+  SFX.place(false);
+  renderBoard('ai');
+  s.current = 'O';
+  processResult('ai');
+}
+
+function minimax(b, isMax) {
+  const w = checkWin(b, 'O'); if (w) return 10;
+  const l = checkWin(b, 'X'); if (l) return -10;
+  if (b.every(v => v)) return 0;
+  if (isMax) {
+    let best = -Infinity;
+    b.forEach((v,i) => { if (!v) { b[i]='O'; best=Math.max(best,minimax(b,false)); b[i]=null; } });
+    return best;
+  } else {
+    let best = Infinity;
+    b.forEach((v,i) => { if (!v) { b[i]='X'; best=Math.min(best,minimax(b,true)); b[i]=null; } });
+    return best;
+  }
+}
+
+function bestMove(board) {
+  let best = -Infinity, move = -1;
+  board.forEach((v,i) => {
+    if (!v) { board[i]='O'; const s=minimax(board,false); board[i]=null; if(s>best){best=s;move=i;} }
+  });
+  return move;
+}
+
+// ======== TAB SWITCH ========
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['local','ai','online'][i]===tab));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  SFX.click();
+  if (tab !== 'online') renderBoard(tab);
+}
+
+// ======== ONLINE (BroadcastChannel) ========
+let bc = null;
+const onlineState = {
+  roomCode: null, mySymbol: null, isHost: false, connected: false
+};
+
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+function createRoom() {
+  const code = genCode();
+  onlineState.roomCode = code;
+  onlineState.mySymbol = 'X';
+  onlineState.isHost = true;
+  onlineState.connected = false;
+  setupChannel(code);
+  showOnlineGame(code);
+  setConnBadge('waiting', 'รอผู้เล่น O...');
+  document.getElementById('o-my-symbol').innerHTML = 'คุณคือ <span class="sx">X</span>';
+  SFX.click();
+}
+
+function joinRoom() {
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  if (code.length !== 4) { SFX.error(); showNotif('กรอกรหัสให้ครบ 4 ตัว', '#ff2d78'); return; }
+  onlineState.roomCode = code;
+  onlineState.mySymbol = 'O';
+  onlineState.isHost = false;
+  setupChannel(code);
+  showOnlineGame(code);
+  setConnBadge('waiting', 'กำลังเชื่อมต่อ...');
+  document.getElementById('o-my-symbol').innerHTML = 'คุณคือ <span class="so">O</span>';
+  // Send join ping
+  setTimeout(() => onlineSend({ type: 'join', symbol: 'O' }), 300);
+  SFX.click();
+}
+
+function setupChannel(code) {
+  if (bc) { try { bc.close(); } catch(e) {} }
+  bc = new BroadcastChannel('neonxo_' + code);
+  bc.onmessage = onlineReceive;
+}
+
+function onlineSend(data) {
+  if (bc) bc.postMessage(data);
+}
+
+function onlineReceive(e) {
+  const d = e.data;
+  if (d.type === 'join') {
+    if (!onlineState.connected) {
+      onlineState.connected = true;
+      setConnBadge('connected', 'เชื่อมต่อแล้ว!');
+      SFX.join();
+      showNotif('ผู้เล่น O เข้าร่วมแล้ว!', '#39ff14');
+      resetGame('online');
+      onlineSend({ type: 'joined_ack', board: states.online.board, current: states.online.current, scores: states.online.scores });
+    }
+  } else if (d.type === 'joined_ack') {
+    onlineState.connected = true;
+    setConnBadge('connected', 'เชื่อมต่อแล้ว!');
+    SFX.join();
+    showNotif('เข้าร่วมสำเร็จ! คุณคือ O', '#39ff14');
+    states.online.board = d.board;
+    states.online.current = d.current;
+    states.online.scores = d.scores;
+    renderBoard('online');
+    updateStatusTurn('online');
+  } else if (d.type === 'move') {
+    states.online.board[d.index] = d.symbol;
+    states.online.current = d.symbol;
+    const cellEl = document.getElementById('o-board').children[d.index];
+    burstAtCell(cellEl, d.symbol === 'X' ? '#00f5ff' : '#ff2d78');
+    SFX.place(d.symbol === 'X');
+    renderBoard('online');
+    processResult('online');
+  } else if (d.type === 'reset') {
+    states.online.board = Array(9).fill(null);
+    states.online.current = 'X'; states.online.over = false;
+    if (d.scores) states.online.scores = d.scores;
+    document.getElementById('o-svg').innerHTML = '';
+    renderBoard('online');
+    updateStatusTurn('online');
+    updateScore('online');
+  }
+}
+
+function onlinePlay(i) {
+  const s = states['online'];
+  if (!onlineState.connected) { SFX.error(); showNotif('ยังไม่ได้เชื่อมต่อ', '#ff2d78'); return; }
+  if (s.over || s.board[i]) return;
+  if (s.current !== onlineState.mySymbol) { SFX.error(); showNotif('ยังไม่ใช่ตาของคุณ', '#fff01f'); return; }
+  s.board[i] = onlineState.mySymbol;
+  const cellEl = document.getElementById('o-board').children[i];
+  burstAtCell(cellEl, onlineState.mySymbol === 'X' ? '#00f5ff' : '#ff2d78');
+  SFX.place(onlineState.mySymbol === 'X');
+  onlineSend({ type: 'move', index: i, symbol: onlineState.mySymbol });
+  renderBoard('online');
+  processResult('online');
+}
+
+function onlineReset() {
+  const s = states['online'];
+  s.board = Array(9).fill(null); s.current = 'X'; s.over = false;
+  document.getElementById('o-svg').innerHTML = '';
+  onlineSend({ type: 'reset', scores: s.scores });
+  renderBoard('online');
+  updateStatusTurn('online');
+  SFX.click();
+}
+
+function showOnlineGame(code) {
+  document.getElementById('online-lobby').style.display = 'none';
+  const area = document.getElementById('online-game-area');
+  area.style.display = 'flex';
+  document.getElementById('o-room-code').textContent = code;
+  states.online.board = Array(9).fill(null);
+  states.online.current = 'X'; states.online.over = false;
+  states.online.scores = {X:0,O:0,D:0};
+  renderBoard('online');
+  updateScore('online');
+  document.getElementById('o-status').innerHTML = '<div class="turn-indicator"><span class="turn-mark x">X</span><span> กำลังรอผู้เล่นอีกคน...</span></div>';
+}
+
+function leaveRoom() {
+  if (bc) { try { bc.close(); } catch(e) {} bc = null; }
+  onlineState.roomCode = null; onlineState.connected = false;
+  document.getElementById('online-lobby').style.display = '';
+  document.getElementById('online-game-area').style.display = 'none';
+  document.getElementById('join-code').value = '';
+  SFX.click();
+}
+
+function setConnBadge(type, text) {
+  const el = document.getElementById('o-conn-badge');
+  el.className = 'conn-badge ' + type;
+  document.getElementById('o-conn-text').textContent = text;
+}
+
+// ======== INIT ========
+renderBoard('local');
+renderBoard('ai');
+renderBoard('online');
+document.getElementById('o-status').innerHTML = '<div>สร้างหรือเข้าร่วมห้อง</div>';
+</script>
+</body>
+</html>
