@@ -30,7 +30,6 @@
     overflow-x: hidden;
   }
 
-  /* === STARS BACKGROUND === */
   #stars {
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
     background:
@@ -53,7 +52,6 @@
       radial-gradient(1px 1px at 75% 80%, rgba(255,45,120,0.5) 0%, transparent 100%);
   }
 
-  /* === SCANLINES === */
   #scanlines {
     position: fixed; inset: 0; pointer-events: none; z-index: 1;
     background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
@@ -64,14 +62,12 @@
     100% { background-position: 0 100px; }
   }
 
-  /* === LAYOUT === */
   .app {
     position: relative; z-index: 2;
     display: flex; flex-direction: column; align-items: center;
     min-height: 100vh; padding: 20px 16px 40px;
   }
 
-  /* === TITLE === */
   .title {
     font-family: 'Orbitron', monospace;
     font-size: clamp(36px, 8vw, 72px);
@@ -93,7 +89,6 @@
     margin-bottom: 24px; text-transform: uppercase;
   }
 
-  /* === MODE TABS === */
   .mode-tabs {
     display: flex; gap: 0; margin-bottom: 24px;
     border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
@@ -110,7 +105,6 @@
     text-shadow: 0 0 10px var(--neon-purple);
   }
 
-  /* === PANELS === */
   .screen { width: 100%; max-width: 440px; display: none; flex-direction: column; align-items: center; gap: 16px; }
   .screen.active { display: flex; }
 
@@ -120,7 +114,6 @@
     padding: 20px; backdrop-filter: blur(10px);
   }
 
-  /* === SCORE BOARD === */
   .scoreboard {
     display: flex; justify-content: space-around; align-items: center; width: 100%;
   }
@@ -135,7 +128,6 @@
   .score-num.d-color { color: rgba(150,150,200,0.5); }
   .score-divider { font-size: 20px; color: var(--border); }
 
-  /* === STATUS === */
   .status-bar {
     font-family: 'Orbitron', monospace; font-size: 13px; letter-spacing: 2px;
     text-align: center; padding: 10px 16px;
@@ -145,13 +137,12 @@
     transition: all 0.3s;
   }
 
-  /* === BOARD === */
-  .board-wrap { position: relative; }
+  .board-wrap { position: relative; overflow: visible; }
   .board {
     display: grid; grid-template-columns: repeat(3, 1fr);
     gap: 10px; padding: 10px;
     background: rgba(0,0,0,0.2); border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 12px; overflow: visible;
   }
   .cell {
     width: 100px; height: 100px;
@@ -174,25 +165,29 @@
     transform: scale(1.02);
   }
   .cell.x-mark {
-    color: var(--neon-x);
-    text-shadow: var(--glow-x);
+    color: var(--neon-x); text-shadow: var(--glow-x);
     border-color: rgba(0,245,255,0.3);
     animation: markAppear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .cell.o-mark {
-    color: var(--neon-o);
-    text-shadow: var(--glow-o);
+    color: var(--neon-o); text-shadow: var(--glow-o);
     border-color: rgba(255,45,120,0.3);
     animation: markAppear 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
-  .cell.win-cell {
-    animation: winPulse 0.6s ease-out forwards;
-  }
-  .cell.x-mark.win-cell { box-shadow: 0 0 30px var(--neon-x), inset 0 0 20px rgba(0,245,255,0.15); background: rgba(0,245,255,0.08); }
-  .cell.o-mark.win-cell { box-shadow: 0 0 30px var(--neon-o), inset 0 0 20px rgba(255,45,120,0.15); background: rgba(255,45,120,0.08); }
+  .cell.win-cell { animation: winPulse 0.6s ease-out forwards; }
+  .cell.x-mark.win-cell { box-shadow: 0 0 40px #00f5ff, 0 0 80px #00f5ff, inset 0 0 30px rgba(0,245,255,0.4); background: rgba(0,245,255,0.2); border-color: #00f5ff; animation: winGlowX 0.8s ease-in-out infinite alternate; }
+  .cell.o-mark.win-cell { box-shadow: 0 0 40px #ff2d78, 0 0 80px #ff2d78, inset 0 0 30px rgba(255,45,120,0.4); background: rgba(255,45,120,0.2); border-color: #ff2d78; animation: winGlowO 0.8s ease-in-out infinite alternate; }
   @keyframes markAppear {
     0% { transform: scale(0) rotate(-10deg); opacity: 0; }
     100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  @keyframes winGlowX {
+    0% { box-shadow: 0 0 30px #00f5ff, 0 0 60px #00f5ff, inset 0 0 20px rgba(0,245,255,0.3); }
+    100% { box-shadow: 0 0 60px #00f5ff, 0 0 120px #00f5ff, inset 0 0 40px rgba(0,245,255,0.5); }
+  }
+  @keyframes winGlowO {
+    0% { box-shadow: 0 0 30px #ff2d78, 0 0 60px #ff2d78, inset 0 0 20px rgba(255,45,120,0.3); }
+    100% { box-shadow: 0 0 60px #ff2d78, 0 0 120px #ff2d78, inset 0 0 40px rgba(255,45,120,0.5); }
   }
   @keyframes winPulse {
     0% { transform: scale(1); }
@@ -201,13 +196,8 @@
     100% { transform: scale(1); }
   }
 
-  /* === WIN LINE === */
-  .win-line-svg {
-    position: absolute; top: 10px; left: 10px; pointer-events: none;
-    width: calc(100% - 20px); height: calc(100% - 20px);
-  }
 
-  /* === BUTTONS === */
+
   .btn {
     font-family: 'Orbitron', monospace; font-size: 12px; letter-spacing: 2px;
     padding: 11px 28px; border-radius: 8px; cursor: pointer;
@@ -215,11 +205,7 @@
     background: rgba(191,95,255,0.1); color: var(--neon-purple);
     border: 1px solid rgba(191,95,255,0.4);
   }
-  .btn:hover {
-    background: rgba(191,95,255,0.2);
-    box-shadow: var(--glow-btn);
-    transform: translateY(-1px);
-  }
+  .btn:hover { background: rgba(191,95,255,0.2); box-shadow: var(--glow-btn); transform: translateY(-1px); }
   .btn:active { transform: scale(0.97); }
   .btn.btn-x { background: rgba(0,245,255,0.1); color: var(--neon-x); border-color: rgba(0,245,255,0.4); }
   .btn.btn-x:hover { background: rgba(0,245,255,0.2); box-shadow: var(--glow-x); }
@@ -227,7 +213,6 @@
   .btn.btn-o:hover { background: rgba(255,45,120,0.2); box-shadow: var(--glow-o); }
   .btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 
-  /* === INPUT === */
   .input-group { display: flex; flex-direction: column; gap: 6px; width: 100%; }
   .input-label { font-size: 11px; letter-spacing: 3px; color: rgba(150,150,200,0.5); }
   .neon-input {
@@ -244,7 +229,6 @@
   }
   .neon-input::placeholder { color: rgba(191,95,255,0.2); letter-spacing: 3px; font-size: 14px; }
 
-  /* === ROOM CODE === */
   .room-display {
     width: 100%; text-align: center; padding: 16px;
     background: rgba(0,0,0,0.4); border: 1px solid rgba(57,255,20,0.3);
@@ -255,9 +239,7 @@
     font-family: 'Orbitron', monospace; font-size: 36px; font-weight: 700;
     color: var(--neon-green); text-shadow: var(--glow-green); letter-spacing: 10px;
   }
-  .room-tip { font-size: 11px; color: rgba(150,150,200,0.4); margin-top: 6px; }
 
-  /* === CONNECTION STATUS === */
   .conn-badge {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 4px 12px; border-radius: 20px; font-size: 11px; letter-spacing: 2px;
@@ -269,23 +251,16 @@
   .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: blink 1.2s ease-in-out infinite; }
   @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
-  /* === ONLINE LOBBY === */
   .lobby-section { display: flex; flex-direction: column; gap: 10px; }
   .lobby-divider { text-align: center; color: rgba(100,100,200,0.3); font-size: 11px; letter-spacing: 4px; padding: 4px 0; }
 
-  /* === TURN INDICATOR === */
-  .turn-indicator {
-    display: flex; align-items: center; gap: 8px;
-    font-family: 'Orbitron', monospace; font-size: 13px;
-  }
+  .turn-indicator { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', monospace; font-size: 13px; }
   .turn-mark { font-size: 18px; font-weight: 900; }
   .turn-mark.x { color: var(--neon-x); text-shadow: var(--glow-x); }
   .turn-mark.o { color: var(--neon-o); text-shadow: var(--glow-o); }
 
-  /* === PARTICLE CANVAS === */
   #particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
 
-  /* === NOTIFICATION === */
   .notif {
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
     background: rgba(10,10,40,0.95); border: 1px solid var(--border);
@@ -296,7 +271,6 @@
   }
   .notif.show { transform: translateX(-50%) translateY(0); }
 
-  /* === ONLINE INDICATOR === */
   .my-symbol-badge {
     font-size: 11px; letter-spacing: 2px; color: rgba(150,150,200,0.5);
     text-align: center; padding: 4px;
@@ -305,9 +279,97 @@
   .my-symbol-badge .sx { color: var(--neon-x); text-shadow: var(--glow-x); }
   .my-symbol-badge .so { color: var(--neon-o); text-shadow: var(--glow-o); }
 
+  /* === SCREENS === */
+  .page { display: none !important; }
+  .page.active { display: flex !important; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; }
+  #page-mode.active { padding: 40px 20px; }
+  #page-game.active { padding: 20px 16px 40px; }
+
+  /* === LANDING PAGE === */
+  .landing-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(48px, 12vw, 100px);
+    font-weight: 900; letter-spacing: 16px; text-align: center;
+    background: linear-gradient(90deg, var(--neon-x), var(--neon-purple), var(--neon-o));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(191,95,255,0.6));
+    animation: titlePulse 3s ease-in-out infinite;
+    margin-bottom: 8px;
+  }
+  .landing-sub {
+    font-size: 13px; letter-spacing: 8px; color: rgba(150,150,200,0.5);
+    margin-bottom: 60px; text-transform: uppercase; text-align: center;
+  }
+  .start-btn {
+    font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700;
+    letter-spacing: 6px; padding: 20px 60px; border-radius: 12px;
+    cursor: pointer; text-transform: uppercase; position: relative;
+    background: transparent; color: var(--neon-purple);
+    border: 2px solid var(--neon-purple);
+    box-shadow: 0 0 20px rgba(191,95,255,0.4), inset 0 0 20px rgba(191,95,255,0.05);
+    transition: all 0.3s; overflow: hidden;
+  }
+  .start-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(191,95,255,0.15), transparent);
+    transform: translateX(-100%); transition: transform 0.5s;
+  }
+  .start-btn:hover::before { transform: translateX(100%); }
+  .start-btn:hover {
+    box-shadow: 0 0 40px rgba(191,95,255,0.8), inset 0 0 30px rgba(191,95,255,0.1);
+    transform: scale(1.05);
+  }
+  .start-btn:active { transform: scale(0.97); }
+
+  /* === MODE SELECT === */
+  .mode-title {
+    font-family: 'Orbitron', monospace; font-size: 16px; letter-spacing: 6px;
+    color: rgba(150,150,200,0.6); margin-bottom: 40px; text-align: center;
+  }
+  .mode-cards { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 360px; }
+  .mode-card {
+    padding: 24px 28px; border-radius: 14px; cursor: pointer;
+    border: 1px solid var(--border); background: var(--panel);
+    transition: all 0.25s; text-align: left; backdrop-filter: blur(10px);
+    display: flex; align-items: center; gap: 16px;
+  }
+  .mode-card:hover { transform: translateX(8px); }
+  .mode-card.local:hover { border-color: var(--neon-purple); box-shadow: 0 0 20px rgba(191,95,255,0.3); }
+  .mode-card.ai-mode:hover { border-color: var(--neon-x); box-shadow: 0 0 20px rgba(0,245,255,0.3); }
+  .mode-card.online-mode:hover { border-color: var(--neon-green); box-shadow: 0 0 20px rgba(57,255,20,0.3); }
+  .mode-icon { font-size: 32px; }
+  .mode-info {}
+  .mode-name { font-family: 'Orbitron', monospace; font-size: 14px; font-weight: 700; letter-spacing: 3px; margin-bottom: 4px; }
+  .mode-desc { font-size: 11px; color: rgba(150,150,200,0.5); letter-spacing: 1px; }
+  .mode-card.local .mode-name { color: var(--neon-purple); }
+  .mode-card.ai-mode .mode-name { color: var(--neon-x); }
+  .mode-card.online-mode .mode-name { color: var(--neon-green); }
+
+  .back-btn {
+    margin-top: 28px; font-family: 'Orbitron', monospace; font-size: 11px;
+    letter-spacing: 3px; color: rgba(150,150,200,0.4); background: none;
+    border: none; cursor: pointer; transition: color 0.2s; padding: 8px 16px;
+  }
+  .back-btn:hover { color: var(--neon-purple); }
+
   @media (max-width: 380px) {
     .cell { width: 85px; height: 85px; font-size: 36px; }
   }
+
+  /* === TIMER === */
+  .timer-wrap {
+    width: 100%; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .timer-num {
+    font-family: 'Orbitron', monospace; font-size: 28px; font-weight: 700;
+    transition: color 0.3s;
+  }
+  .timer-num.normal { color: var(--neon-green); text-shadow: var(--glow-green); }
+  .timer-num.warning { color: var(--neon-yellow); text-shadow: 0 0 8px #fff01f, 0 0 24px #fff01f55; }
+  .timer-num.danger { color: var(--neon-o); text-shadow: var(--glow-o); animation: timerPulse 0.4s ease-in-out infinite; }
+  @keyframes timerPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  .timer-bar-bg { width: 100%; height: 6px; background: rgba(100,100,255,0.15); border-radius: 3px; overflow: hidden; }
+  .timer-bar { height: 100%; border-radius: 3px; transition: width 1s linear, background 0.3s; }
 </style>
 </head>
 <body>
@@ -315,18 +377,55 @@
 <canvas id="particles"></canvas>
 <div id="scanlines"></div>
 
-<div class="app">
-  <div class="title">NEON XO</div>
-  <div class="subtitle">CYBERPUNK EDITION</div>
+<div class="app" style="position:relative; z-index:2;">
 
-  <!-- MODE TABS -->
-  <div class="mode-tabs">
-    <button class="tab active" onclick="switchTab('local')">LOCAL</button>
-    <button class="tab" onclick="switchTab('ai')">VS AI</button>
-    <button class="tab" onclick="switchTab('online')">ONLINE</button>
+  <!-- LANDING PAGE -->
+  <div class="page active" id="page-landing">
+    <div class="landing-title">NEON XO</div>
+    <div class="landing-sub">CYBERPUNK EDITION</div>
+    <button class="start-btn" onclick="goToModeSelect()">START GAME</button>
+
   </div>
 
-  <!-- === LOCAL 2P === -->
+  <!-- MODE SELECT -->
+  <div class="page" id="page-mode">
+    <div class="landing-title" style="font-size:clamp(32px,8vw,60px); margin-bottom:4px;">NEON XO</div>
+    <div class="mode-title">เลือกโหมดการเล่น</div>
+    <div class="mode-cards">
+      <div class="mode-card local" onclick="goToGame('local')">
+        <div class="mode-icon">👥</div>
+        <div class="mode-info">
+          <div class="mode-name">LOCAL 2P</div>
+          <div class="mode-desc">เล่น 2 คนบนเครื่องเดียวกัน</div>
+        </div>
+      </div>
+      <div class="mode-card ai-mode" onclick="goToGame('ai')">
+        <div class="mode-icon">🤖</div>
+        <div class="mode-info">
+          <div class="mode-name">VS AI</div>
+          <div class="mode-desc">ท้าทาย AI ที่ฉลาดสุดๆ</div>
+        </div>
+      </div>
+      <div class="mode-card online-mode" onclick="goToGame('online')">
+        <div class="mode-icon">🌐</div>
+        <div class="mode-info">
+          <div class="mode-name">ONLINE</div>
+          <div class="mode-desc">เล่นกับเพื่อนจากทุกที่</div>
+        </div>
+      </div>
+    </div>
+    <button class="back-btn" onclick="goBack('landing')">← ย้อนกลับ</button>
+  </div>
+
+  <!-- GAME PAGE -->
+  <div class="page" id="page-game">
+    <div class="mode-tabs">
+      <button class="tab active" id="tab-local" onclick="switchTab('local')">LOCAL</button>
+      <button class="tab" id="tab-ai" onclick="switchTab('ai')">VS AI</button>
+      <button class="tab" id="tab-online" onclick="switchTab('online')">ONLINE</button>
+    </div>
+
+  <!-- LOCAL 2P -->
   <div id="screen-local" class="screen active">
     <div class="panel">
       <div class="scoreboard">
@@ -349,9 +448,15 @@
     <div class="status-bar" id="l-status">
       <div class="turn-indicator"><span class="turn-mark x">X</span><span> — ตาของคุณ</span></div>
     </div>
+    <div class="panel" style="padding:12px 20px;">
+      <div class="timer-wrap">
+        <div class="timer-num normal" id="l-timer">10</div>
+        <div class="timer-bar-bg"><div class="timer-bar" id="l-timer-bar" style="width:100%;background:var(--neon-green)"></div></div>
+      </div>
+    </div>
     <div class="board-wrap">
       <div class="board" id="l-board"></div>
-      <svg class="win-line-svg" id="l-svg" viewBox="0 0 320 320"></svg>
+
     </div>
     <div class="btn-row">
       <button class="btn" onclick="resetGame('local')">⟳ เริ่มใหม่</button>
@@ -359,7 +464,7 @@
     </div>
   </div>
 
-  <!-- === VS AI === -->
+  <!-- VS AI -->
   <div id="screen-ai" class="screen">
     <div class="panel">
       <div class="scoreboard">
@@ -382,9 +487,15 @@
     <div class="status-bar" id="a-status">
       <div class="turn-indicator"><span class="turn-mark x">X</span><span> — ตาของคุณ</span></div>
     </div>
+    <div class="panel" style="padding:12px 20px;">
+      <div class="timer-wrap">
+        <div class="timer-num normal" id="a-timer">10</div>
+        <div class="timer-bar-bg"><div class="timer-bar" id="a-timer-bar" style="width:100%;background:var(--neon-green)"></div></div>
+      </div>
+    </div>
     <div class="board-wrap">
       <div class="board" id="a-board"></div>
-      <svg class="win-line-svg" id="a-svg" viewBox="0 0 320 320"></svg>
+
     </div>
     <div class="btn-row">
       <button class="btn" onclick="resetGame('ai')">⟳ เริ่มใหม่</button>
@@ -392,12 +503,12 @@
     </div>
   </div>
 
-  <!-- === ONLINE === -->
+  <!-- ONLINE -->
   <div id="screen-online" class="screen">
     <div class="panel lobby-section" id="online-lobby">
       <div style="text-align:center; margin-bottom:4px;">
         <div style="font-family:'Orbitron',monospace; font-size:13px; letter-spacing:3px; color:rgba(150,150,200,0.6);">MULTIPLAYER ONLINE</div>
-        <div style="font-size:11px; color:rgba(100,100,180,0.4); margin-top:4px;">เชื่อมต่อผ่าน BroadcastChannel (same browser)</div>
+        <div style="font-size:11px; color:rgba(100,100,180,0.4); margin-top:4px;">เล่นได้จากทุกเครื่อง ทุกที่</div>
       </div>
       <button class="btn btn-x" onclick="createRoom()" style="width:100%">＋ สร้างห้องใหม่</button>
       <div class="lobby-divider">— หรือ —</div>
@@ -407,11 +518,11 @@
       </div>
       <button class="btn btn-o" onclick="joinRoom()" style="width:100%">→ เข้าร่วมห้อง</button>
       <div style="font-size:11px; color:rgba(100,100,180,0.4); text-align:center; padding-top:4px;">
-        💡 เปิด 2 แท็บในเบราว์เซอร์เดียวกัน แล้วใช้รหัสห้องเพื่อเชื่อมต่อ
+        💡 ส่งรหัสห้องให้เพื่อน แล้วเล่นได้เลยจากคนละเครื่อง!
       </div>
     </div>
 
-    <div id="online-game-area" style="display:none; flex-direction:column; align-items:center; gap:14px; width:100%">
+    <div id="online-game-area" style="display:none; flex-direction:column; align-items:center; gap:14px; width:100%; max-width:440px">
       <div class="panel" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <div id="o-room-show" class="room-display" style="flex:1; min-width:140px; padding:10px 12px;">
           <div class="room-label">ROOM</div>
@@ -443,9 +554,15 @@
       <div class="status-bar" id="o-status">
         <div class="turn-indicator"><span class="turn-mark x">X</span><span> กำลังรอ...</span></div>
       </div>
+      <div class="panel" style="padding:12px 20px;">
+        <div class="timer-wrap">
+          <div class="timer-num normal" id="o-timer">10</div>
+          <div class="timer-bar-bg"><div class="timer-bar" id="o-timer-bar" style="width:100%;background:var(--neon-green)"></div></div>
+        </div>
+      </div>
       <div class="board-wrap">
         <div class="board" id="o-board"></div>
-        <svg class="win-line-svg" id="o-svg" viewBox="0 0 320 320"></svg>
+
       </div>
       <div class="btn-row">
         <button class="btn" onclick="onlineReset()">⟳ เริ่มใหม่</button>
@@ -455,15 +572,31 @@
   </div>
 </div>
 
+    <button class="back-btn" onclick="goBack('mode')" style="margin-top:8px;">← เปลี่ยนโหมด</button>
+  </div><!-- end page-game -->
+
+</div><!-- end app -->
+
 <div class="notif" id="notif"></div>
 
-<script>
-// ======== AUDIO ENGINE ========
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  databaseURL: "https://neon-xo-b59e5-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ======== AUDIO ========
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let actx = null;
 function getACtx() { if (!actx) actx = new AudioCtx(); return actx; }
 
-function playTone(freq, type, duration, vol = 0.3, attack = 0.01, release = 0.15) {
+function playTone(freq, type, duration, vol = 0.3) {
   try {
     const ctx = getACtx();
     const osc = ctx.createOscillator();
@@ -471,27 +604,22 @@ function playTone(freq, type, duration, vol = 0.3, attack = 0.01, release = 0.15
     osc.connect(gain); gain.connect(ctx.destination);
     osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
     gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + attack);
+    gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
     osc.start(); osc.stop(ctx.currentTime + duration + 0.05);
   } catch(e) {}
 }
 
 const SFX = {
-  click() {
-    playTone(440, 'sine', 0.08, 0.15);
-    setTimeout(() => playTone(660, 'sine', 0.06, 0.1), 40);
-  },
+  click() { playTone(440, 'sine', 0.08, 0.15); setTimeout(() => playTone(660, 'sine', 0.06, 0.1), 40); },
   place(isX) {
     const freq = isX ? [523, 659] : [392, 494];
     playTone(freq[0], 'triangle', 0.1, 0.2);
     setTimeout(() => playTone(freq[1], 'triangle', 0.12, 0.18), 60);
-    setTimeout(() => { playTone(freq[1]*2, 'sine', 0.08, 0.1, 0.005, 0.08); }, 100);
   },
   win() {
-    const seq = [523, 659, 784, 1047];
-    seq.forEach((f,i) => setTimeout(() => playTone(f, 'triangle', 0.18, 0.25), i * 90));
-    setTimeout(() => playTone(1047, 'sine', 0.5, 0.3, 0.01, 0.4), 400);
+    [523,659,784,1047].forEach((f,i) => setTimeout(() => playTone(f, 'triangle', 0.18, 0.25), i*90));
+    setTimeout(() => playTone(1047, 'sine', 0.5, 0.3), 400);
   },
   draw() {
     playTone(330, 'sawtooth', 0.15, 0.15);
@@ -499,51 +627,31 @@ const SFX = {
     setTimeout(() => playTone(262, 'sawtooth', 0.1, 0.1), 200);
   },
   error() { playTone(200, 'sawtooth', 0.15, 0.2); },
-  join() {
-    playTone(440, 'sine', 0.1, 0.2);
-    setTimeout(() => playTone(880, 'sine', 0.15, 0.25), 80);
-  }
+  join() { playTone(440, 'sine', 0.1, 0.2); setTimeout(() => playTone(880, 'sine', 0.15, 0.25), 80); }
 };
 
 // ======== PARTICLES ========
 const pCanvas = document.getElementById('particles');
 const pCtx = pCanvas.getContext('2d');
 let particles = [];
-
-function resizeCanvas() {
-  pCanvas.width = window.innerWidth;
-  pCanvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+function resizeCanvas() { pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
 
 function spawnParticles(x, y, color, count = 12) {
-  const rect = pCanvas.getBoundingClientRect();
   for (let i = 0; i < count; i++) {
     const angle = (Math.PI * 2 / count) * i + Math.random() * 0.5;
     const speed = 1.5 + Math.random() * 3;
-    particles.push({
-      x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      life: 1, decay: 0.02 + Math.random() * 0.02,
-      size: 2 + Math.random() * 3, color
-    });
+    particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, decay: 0.02+Math.random()*0.02, size: 2+Math.random()*3, color });
   }
 }
-
 function animParticles() {
   pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
   particles = particles.filter(p => p.life > 0);
   particles.forEach(p => {
-    p.x += p.vx; p.y += p.vy;
-    p.vy += 0.06; p.life -= p.decay;
-    pCtx.save();
-    pCtx.globalAlpha = p.life;
-    pCtx.fillStyle = p.color;
+    p.x += p.vx; p.y += p.vy; p.vy += 0.06; p.life -= p.decay;
+    pCtx.save(); pCtx.globalAlpha = p.life; pCtx.fillStyle = p.color;
     pCtx.shadowColor = p.color; pCtx.shadowBlur = 6;
-    pCtx.beginPath();
-    pCtx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
-    pCtx.fill();
-    pCtx.restore();
+    pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size*p.life, 0, Math.PI*2); pCtx.fill(); pCtx.restore();
   });
   requestAnimationFrame(animParticles);
 }
@@ -551,47 +659,39 @@ animParticles();
 
 function burstAtCell(cellEl, color) {
   const r = cellEl.getBoundingClientRect();
-  spawnParticles(r.left + r.width / 2, r.top + r.height / 2, color, 16);
+  spawnParticles(r.left + r.width/2, r.top + r.height/2, color, 16);
 }
 
 // ======== NOTIFICATION ========
 let notifTimer;
 function showNotif(msg, color = '#bf5fff') {
   const el = document.getElementById('notif');
-  el.textContent = msg;
-  el.style.color = color;
-  el.style.borderColor = color + '55';
-  el.style.boxShadow = `0 0 20px ${color}44`;
-  el.classList.add('show');
-  clearTimeout(notifTimer);
+  el.textContent = msg; el.style.color = color;
+  el.style.borderColor = color+'55'; el.style.boxShadow = `0 0 20px ${color}44`;
+  el.classList.add('show'); clearTimeout(notifTimer);
   notifTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
 // ======== GAME CORE ========
 const WINS = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-
 const states = {
-  local: { board: Array(9).fill(null), current: 'X', over: false, scores: { X:0,O:0,D:0 } },
-  ai:    { board: Array(9).fill(null), current: 'X', over: false, scores: { X:0,O:0,D:0 } },
-  online:{ board: Array(9).fill(null), current: 'X', over: false, scores: { X:0,O:0,D:0 } }
+  local:  { board: Array(9).fill(null), current: 'X', over: false, scores: {X:0,O:0,D:0} },
+  ai:     { board: Array(9).fill(null), current: 'X', over: false, scores: {X:0,O:0,D:0} },
+  online: { board: Array(9).fill(null), current: 'X', over: false, scores: {X:0,O:0,D:0} }
 };
 
-function checkWin(board, p) {
-  return WINS.find(line => line.every(i => board[i] === p)) || null;
-}
+function checkWin(board, p) { return WINS.find(line => line.every(i => board[i] === p)) || null; }
 
 function renderBoard(mode) {
   const s = states[mode];
-  const el = document.getElementById(mode[0] + '-board');
+  const el = document.getElementById(mode[0]+'-board');
   el.innerHTML = '';
   s.board.forEach((v, i) => {
     const cell = document.createElement('div');
-    cell.className = 'cell' + (v ? ' taken' : '') + (v === 'X' ? ' x-mark' : v === 'O' ? ' o-mark' : '');
+    cell.className = 'cell'+(v?' taken':'')+(v==='X'?' x-mark':v==='O'?' o-mark':'');
     cell.textContent = v || '';
     cell.dataset.i = i;
-    if (!v && !s.over) {
-      cell.onclick = () => handleClick(mode, i, cell);
-    }
+    if (!v && !s.over) cell.onclick = () => handleClick(mode, i, cell);
     el.appendChild(cell);
   });
 }
@@ -602,13 +702,11 @@ function handleClick(mode, i, cellEl) {
   if (s.over || s.board[i]) return;
   SFX.place(s.current === 'X');
   s.board[i] = s.current;
-  const color = s.current === 'X' ? '#00f5ff' : '#ff2d78';
-  burstAtCell(cellEl, color);
+  burstAtCell(cellEl, s.current === 'X' ? '#00f5ff' : '#ff2d78');
   renderBoard(mode);
   processResult(mode);
-  if (mode === 'ai' && !s.over && s.current === 'O') {
-    setTimeout(() => aiMove(), 400);
-  }
+  if (!s.over) startTimer(mode);
+  if (mode === 'ai' && !s.over && s.current === 'O') setTimeout(() => aiMove(), 400);
 }
 
 function processResult(mode) {
@@ -617,74 +715,53 @@ function processResult(mode) {
   const prefix = mode[0];
   if (line) {
     s.over = true; s.scores[s.current]++;
-    updateScore(mode);
-    SFX.win();
+    stopTimer(mode); updateScore(mode); SFX.win();
     markWinCells(mode, line, s.current);
     drawWinLine(mode, line, s.current);
-    const msg = s.current === 'X' ? `<span style="color:var(--neon-x);text-shadow:var(--glow-x)">X ชนะ! 🏆</span>` : `<span style="color:var(--neon-o);text-shadow:var(--glow-o)">O ชนะ! 🏆</span>`;
-    document.getElementById(prefix + '-status').innerHTML = `<div class="turn-indicator">${msg}</div>`;
-    showNotif(s.current + ' WIN!', s.current === 'X' ? '#00f5ff' : '#ff2d78');
+    const msg = s.current==='X'
+      ? `<span style="color:var(--neon-x);text-shadow:var(--glow-x)">X ชนะ! 🏆</span>`
+      : `<span style="color:var(--neon-o);text-shadow:var(--glow-o)">O ชนะ! 🏆</span>`;
+    document.getElementById(prefix+'-status').innerHTML = `<div class="turn-indicator">${msg}</div>`;
+    showNotif(s.current+' WIN!', s.current==='X'?'#00f5ff':'#ff2d78');
     return;
   }
   if (s.board.every(v => v)) {
     s.over = true; s.scores.D++;
-    updateScore(mode); SFX.draw();
-    document.getElementById(prefix + '-status').innerHTML = '<div>เสมอ — DRAW</div>';
+    stopTimer(mode); updateScore(mode); SFX.draw();
+    document.getElementById(prefix+'-status').innerHTML = '<div>เสมอ — DRAW</div>';
     showNotif('DRAW!', '#fff01f');
     return;
   }
-  s.current = s.current === 'X' ? 'O' : 'X';
+  s.current = s.current==='X'?'O':'X';
   updateStatusTurn(mode);
+  if (!s.over) startTimer(mode); else stopTimer(mode);
 }
 
 function updateStatusTurn(mode) {
-  const s = states[mode];
-  const prefix = mode[0];
+  const s = states[mode]; const prefix = mode[0];
   const mark = `<span class="turn-mark ${s.current.toLowerCase()}">${s.current}</span>`;
   let label = ' — ตาของคุณ';
-  if (mode === 'ai' && s.current === 'O') label = ' — AI กำลังคิด...';
-  if (mode === 'online') {
-    if (s.current === onlineState.mySymbol) label = ' — ตาของคุณ';
-    else label = ' — รอคู่แข่ง...';
+  if (mode==='ai' && s.current==='O') label = ' — AI กำลังคิด...';
+  if (mode==='online') {
+    label = s.current===onlineState.mySymbol ? ' — ตาของคุณ' : ' — รอคู่แข่ง...';
   }
-  document.getElementById(prefix + '-status').innerHTML = `<div class="turn-indicator">${mark}<span>${label}</span></div>`;
+  document.getElementById(prefix+'-status').innerHTML = `<div class="turn-indicator">${mark}<span>${label}</span></div>`;
 }
 
-function markWinCells(mode, line, player) {
-  const el = document.getElementById(mode[0] + '-board');
-  line.forEach(i => el.children[i].classList.add('win-cell'));
+function markWinCells(mode, line) {
+  const el = document.getElementById(mode[0]+'-board');
+  const lineArr = Array.isArray(line) ? line : Object.values(line).map(Number);
+  lineArr.forEach(i => el.children[i].classList.add('win-cell'));
 }
 
-function drawWinLine(mode, line, player) {
-  const svg = document.getElementById(mode[0] + '-svg');
-  const cellSize = 110;
-  const cols = [55, 165, 275];
-  const rows = [55, 165, 275];
-  const [a, , c] = line;
-  const x1 = cols[a % 3], y1 = rows[Math.floor(a / 3)];
-  const x2 = cols[c % 3], y2 = rows[Math.floor(c / 3)];
-  const color = player === 'X' ? '#00f5ff' : '#ff2d78';
-  const glow = player === 'X' ? '#00f5ff' : '#ff2d78';
-  svg.innerHTML = `
-    <defs>
-      <filter id="gf">
-        <feGaussianBlur stdDeviation="3" result="blur"/>
-        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <line x1="${x1}" y1="${y1}" x2="${x1}" y2="${y1}" stroke="${color}" stroke-width="4" stroke-linecap="round" filter="url(#gf)" opacity="0.9">
-      <animate attributeName="x2" from="${x1}" to="${x2}" dur="0.3s" fill="freeze"/>
-      <animate attributeName="y2" from="${y1}" to="${y2}" dur="0.3s" fill="freeze"/>
-    </line>`;
-}
+function drawWinLine(mode, line, player) {}
 
 function updateScore(mode) {
   const s = states[mode]; const p = mode[0];
-  document.getElementById(p + '-sx').textContent = s.scores.X;
-  document.getElementById(p + '-so').textContent = s.scores.O;
-  document.getElementById(p + '-sd').textContent = s.scores.D;
-  // bounce animation
-  [p+'-sx', p+'-so', p+'-sd'].forEach(id => {
+  document.getElementById(p+'-sx').textContent = s.scores.X;
+  document.getElementById(p+'-so').textContent = s.scores.O;
+  document.getElementById(p+'-sd').textContent = s.scores.D;
+  [p+'-sx',p+'-so',p+'-sd'].forEach(id => {
     const el = document.getElementById(id);
     el.style.transform = 'scale(1.4)';
     setTimeout(() => el.style.transform = '', 200);
@@ -694,26 +771,22 @@ function updateScore(mode) {
 function resetGame(mode) {
   const s = states[mode];
   s.board = Array(9).fill(null); s.current = 'X'; s.over = false;
-  const prefix = mode[0];
-  document.getElementById(prefix + '-svg').innerHTML = '';
+  
   renderBoard(mode);
-  const mark = `<span class="turn-mark x">X</span>`;
-  if (mode === 'online') {
-    onlineSend({ type: 'reset', scores: s.scores });
+  if (mode==='online') {
+    fbUpdate({ board: Array(9).fill(null), current: 'X', over: false });
     updateStatusTurn(mode);
   } else {
-    document.getElementById(prefix + '-status').innerHTML = `<div class="turn-indicator">${mark}<span> — ตาของคุณ</span></div>`;
+    document.getElementById(mode[0]+'-status').innerHTML = `<div class="turn-indicator"><span class="turn-mark x">X</span><span> — ตาของคุณ</span></div>`;
   }
   SFX.click();
 }
 
-function resetScore(mode) {
-  states[mode].scores = { X:0, O:0, D:0 };
-  updateScore(mode); SFX.click();
-}
+function resetScore(mode) { states[mode].scores={X:0,O:0,D:0}; updateScore(mode); SFX.click(); }
 
-// ======== AI (Minimax) ========
+// ======== AI ========
 function aiMove() {
+  stopTimer('ai');
   const s = states['ai'];
   if (s.over) return;
   const move = bestMove(s.board);
@@ -725,152 +798,218 @@ function aiMove() {
   renderBoard('ai');
   s.current = 'O';
   processResult('ai');
+  if (!states['ai'].over) startTimer('ai');
 }
 
 function minimax(b, isMax) {
-  const w = checkWin(b, 'O'); if (w) return 10;
-  const l = checkWin(b, 'X'); if (l) return -10;
-  if (b.every(v => v)) return 0;
+  if (checkWin(b,'O')) return 10;
+  if (checkWin(b,'X')) return -10;
+  if (b.every(v=>v)) return 0;
   if (isMax) {
-    let best = -Infinity;
-    b.forEach((v,i) => { if (!v) { b[i]='O'; best=Math.max(best,minimax(b,false)); b[i]=null; } });
+    let best=-Infinity;
+    b.forEach((v,i) => { if(!v){b[i]='O'; best=Math.max(best,minimax(b,false)); b[i]=null;} });
     return best;
   } else {
-    let best = Infinity;
-    b.forEach((v,i) => { if (!v) { b[i]='X'; best=Math.min(best,minimax(b,true)); b[i]=null; } });
+    let best=Infinity;
+    b.forEach((v,i) => { if(!v){b[i]='X'; best=Math.min(best,minimax(b,true)); b[i]=null;} });
     return best;
   }
 }
 
 function bestMove(board) {
-  let best = -Infinity, move = -1;
-  board.forEach((v,i) => {
-    if (!v) { board[i]='O'; const s=minimax(board,false); board[i]=null; if(s>best){best=s;move=i;} }
-  });
+  let best=-Infinity, move=-1;
+  board.forEach((v,i) => { if(!v){board[i]='O'; const s=minimax(board,false); board[i]=null; if(s>best){best=s;move=i;}} });
   return move;
 }
 
-// ======== TAB SWITCH ========
-function switchTab(tab) {
+// ======== TAB ========
+window.switchTab = function(tab) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['local','ai','online'][i]===tab));
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + tab).classList.add('active');
-  SFX.click();
-  if (tab !== 'online') renderBoard(tab);
-}
-
-// ======== ONLINE (BroadcastChannel) ========
-let bc = null;
-const onlineState = {
-  roomCode: null, mySymbol: null, isHost: false, connected: false
+  document.getElementById('screen-'+tab).classList.add('active');
+  if (tab!=='online') renderBoard(tab);
 };
+
+// ======== ONLINE (Firebase) ========
+const onlineState = { roomCode: null, mySymbol: null, isHost: false, connected: false, unsubscribe: null };
 
 function genCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   return Array.from({length:4}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
 }
 
-function createRoom() {
+function fbRef(path) { return ref(db, `rooms/${onlineState.roomCode}/${path}`); }
+
+async function fbUpdate(data) {
+  if (!onlineState.roomCode) return;
+  await update(ref(db, `rooms/${onlineState.roomCode}`), data);
+}
+
+window.createRoom = async function() {
   const code = genCode();
   onlineState.roomCode = code;
   onlineState.mySymbol = 'X';
   onlineState.isHost = true;
   onlineState.connected = false;
-  setupChannel(code);
+
+  await set(ref(db, `rooms/${code}`), {
+    board: Array(9).fill(null),
+    current: 'X',
+    over: false,
+    scores: {X:0,O:0,D:0},
+    players: { X: true },
+    createdAt: Date.now()
+  });
+
   showOnlineGame(code);
   setConnBadge('waiting', 'รอผู้เล่น O...');
   document.getElementById('o-my-symbol').innerHTML = 'คุณคือ <span class="sx">X</span>';
+  listenRoom();
   SFX.click();
-}
+};
 
-function joinRoom() {
+window.joinRoom = async function() {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
   if (code.length !== 4) { SFX.error(); showNotif('กรอกรหัสให้ครบ 4 ตัว', '#ff2d78'); return; }
+
+  const snap = await get(ref(db, `rooms/${code}`));
+  if (!snap.exists()) { SFX.error(); showNotif('ไม่พบห้องนี้', '#ff2d78'); return; }
+
   onlineState.roomCode = code;
   onlineState.mySymbol = 'O';
   onlineState.isHost = false;
-  setupChannel(code);
+  onlineState.connected = false;
+
+  await update(ref(db, `rooms/${code}`), { 'players/O': true });
+
   showOnlineGame(code);
   setConnBadge('waiting', 'กำลังเชื่อมต่อ...');
   document.getElementById('o-my-symbol').innerHTML = 'คุณคือ <span class="so">O</span>';
-  // Send join ping
-  setTimeout(() => onlineSend({ type: 'join', symbol: 'O' }), 300);
+  listenRoom();
   SFX.click();
-}
+};
 
-function setupChannel(code) {
-  if (bc) { try { bc.close(); } catch(e) {} }
-  bc = new BroadcastChannel('neonxo_' + code);
-  bc.onmessage = onlineReceive;
-}
+function listenRoom() {
+  if (onlineState.unsubscribe) onlineState.unsubscribe();
+  const roomRef = ref(db, `rooms/${onlineState.roomCode}`);
+  onlineState.unsubscribe = onValue(roomRef, (snap) => {
+    if (!snap.exists()) { leaveRoom(); return; }
+    const data = snap.val();
 
-function onlineSend(data) {
-  if (bc) bc.postMessage(data);
-}
-
-function onlineReceive(e) {
-  const d = e.data;
-  if (d.type === 'join') {
-    if (!onlineState.connected) {
-      onlineState.connected = true;
-      setConnBadge('connected', 'เชื่อมต่อแล้ว!');
-      SFX.join();
-      showNotif('ผู้เล่น O เข้าร่วมแล้ว!', '#39ff14');
-      resetGame('online');
-      onlineSend({ type: 'joined_ack', board: states.online.board, current: states.online.current, scores: states.online.scores });
+    // Check connection
+    const players = data.players || {};
+    const bothConnected = players.X && players.O;
+    if (bothConnected) {
+      if (!onlineState.connected) {
+        onlineState.connected = true;
+        setConnBadge('connected', 'เชื่อมต่อแล้ว!');
+        SFX.join();
+        showNotif('เชื่อมต่อสำเร็จ! เริ่มเกมได้เลย', '#39ff14');
+      } else {
+        setConnBadge('connected', 'เชื่อมต่อแล้ว!');
+      }
     }
-  } else if (d.type === 'joined_ack') {
-    onlineState.connected = true;
-    setConnBadge('connected', 'เชื่อมต่อแล้ว!');
-    SFX.join();
-    showNotif('เข้าร่วมสำเร็จ! คุณคือ O', '#39ff14');
-    states.online.board = d.board;
-    states.online.current = d.current;
-    states.online.scores = d.scores;
+
+    // Sync game state
+    const s = states['online'];
+    // Firebase converts arrays to objects, convert back
+    const rawBoard = data.board || {};
+    s.board = Array.from({length: 9}, (_, i) => rawBoard[i] || null);
+    s.current = data.current || 'X';
+    s.over = data.over || false;
+    if (data.scores) s.scores = data.scores;
+
     renderBoard('online');
-    updateStatusTurn('online');
-  } else if (d.type === 'move') {
-    states.online.board[d.index] = d.symbol;
-    states.online.current = d.symbol;
-    const cellEl = document.getElementById('o-board').children[d.index];
-    burstAtCell(cellEl, d.symbol === 'X' ? '#00f5ff' : '#ff2d78');
-    SFX.place(d.symbol === 'X');
-    renderBoard('online');
-    processResult('online');
-  } else if (d.type === 'reset') {
-    states.online.board = Array(9).fill(null);
-    states.online.current = 'X'; states.online.over = false;
-    if (d.scores) states.online.scores = d.scores;
-    document.getElementById('o-svg').innerHTML = '';
-    renderBoard('online');
-    updateStatusTurn('online');
     updateScore('online');
-  }
+
+    if (s.over) {
+      stopTimer('online');
+      if (data.winLine && data.winPlayer) {
+        const svg = document.getElementById('o-svg');
+        svg.innerHTML = '';
+        markWinCells('online', data.winLine, data.winPlayer);
+        setTimeout(() => drawWinLine('online', data.winLine, data.winPlayer), 50);
+        const msg = data.winPlayer==='X'
+          ? `<span style="color:var(--neon-x);text-shadow:var(--glow-x)">X ชนะ! 🏆</span>`
+          : `<span style="color:var(--neon-o);text-shadow:var(--glow-o)">O ชนะ! 🏆</span>`;
+        document.getElementById('o-status').innerHTML = `<div class="turn-indicator">${msg}</div>`;
+      } else {
+        
+        document.getElementById('o-status').innerHTML = '<div>เสมอ — DRAW</div>';
+      }
+    } else if (bothConnected) {
+      updateStatusTurn('online');
+      // Only start timer if game has started (at least 1 move made)
+      const movesMade = s.board.filter(v => v !== null).length;
+      if (movesMade > 0) startTimer('online');
+    }
+  });
 }
 
-function onlinePlay(i) {
+window.onlinePlay = async function(i) {
   const s = states['online'];
   if (!onlineState.connected) { SFX.error(); showNotif('ยังไม่ได้เชื่อมต่อ', '#ff2d78'); return; }
   if (s.over || s.board[i]) return;
   if (s.current !== onlineState.mySymbol) { SFX.error(); showNotif('ยังไม่ใช่ตาของคุณ', '#fff01f'); return; }
-  s.board[i] = onlineState.mySymbol;
-  const cellEl = document.getElementById('o-board').children[i];
-  burstAtCell(cellEl, onlineState.mySymbol === 'X' ? '#00f5ff' : '#ff2d78');
-  SFX.place(onlineState.mySymbol === 'X');
-  onlineSend({ type: 'move', index: i, symbol: onlineState.mySymbol });
-  renderBoard('online');
-  processResult('online');
-}
 
-function onlineReset() {
+  const newBoard = [...s.board];
+  newBoard[i] = onlineState.mySymbol;
+  // Convert to indexed object for Firebase
+  const boardObj = {};
+  newBoard.forEach((v, idx) => { boardObj[idx] = v; });
+
+  const cellEl = document.getElementById('o-board').children[i];
+  burstAtCell(cellEl, onlineState.mySymbol==='X'?'#00f5ff':'#ff2d78');
+  SFX.place(onlineState.mySymbol==='X');
+
+  // Check win/draw
+  const line = checkWin(newBoard, onlineState.mySymbol);
+  if (line) {
+    const newScores = {...s.scores};
+    newScores[onlineState.mySymbol]++;
+    await update(ref(db, `rooms/${onlineState.roomCode}`), {
+      board: boardObj, current: onlineState.mySymbol, over: true,
+      winLine: line, winPlayer: onlineState.mySymbol, scores: newScores
+    });
+    SFX.win();
+  } else if (newBoard.every(v=>v)) {
+    const newScores = {...s.scores};
+    newScores.D++;
+    await update(ref(db, `rooms/${onlineState.roomCode}`), {
+      board: boardObj, current: onlineState.mySymbol, over: true,
+      winLine: null, winPlayer: null, scores: newScores
+    });
+    SFX.draw();
+  } else {
+    const next = onlineState.mySymbol==='X'?'O':'X';
+    await update(ref(db, `rooms/${onlineState.roomCode}`), {
+      board: boardObj, current: next, over: false
+    });
+  }
+};
+
+window.onlineReset = async function() {
+  if (!onlineState.roomCode) return;
   const s = states['online'];
-  s.board = Array(9).fill(null); s.current = 'X'; s.over = false;
-  document.getElementById('o-svg').innerHTML = '';
-  onlineSend({ type: 'reset', scores: s.scores });
-  renderBoard('online');
-  updateStatusTurn('online');
+  
+  await update(ref(db, `rooms/${onlineState.roomCode}`), {
+    board: Array(9).fill(null), current: 'X', over: false,
+    winLine: null, winPlayer: null, scores: s.scores
+  });
   SFX.click();
-}
+};
+
+window.leaveRoom = function() {
+  if (onlineState.unsubscribe) { onlineState.unsubscribe(); onlineState.unsubscribe = null; }
+  if (onlineState.roomCode && onlineState.isHost) {
+    remove(ref(db, `rooms/${onlineState.roomCode}`)).catch(()=>{});
+  }
+  onlineState.roomCode = null; onlineState.connected = false; onlineState.mySymbol = null;
+  document.getElementById('online-lobby').style.display = '';
+  document.getElementById('online-game-area').style.display = 'none';
+  document.getElementById('join-code').value = '';
+  SFX.click();
+};
 
 function showOnlineGame(code) {
   document.getElementById('online-lobby').style.display = 'none';
@@ -885,20 +1024,101 @@ function showOnlineGame(code) {
   document.getElementById('o-status').innerHTML = '<div class="turn-indicator"><span class="turn-mark x">X</span><span> กำลังรอผู้เล่นอีกคน...</span></div>';
 }
 
-function leaveRoom() {
-  if (bc) { try { bc.close(); } catch(e) {} bc = null; }
-  onlineState.roomCode = null; onlineState.connected = false;
-  document.getElementById('online-lobby').style.display = '';
-  document.getElementById('online-game-area').style.display = 'none';
-  document.getElementById('join-code').value = '';
-  SFX.click();
-}
-
 function setConnBadge(type, text) {
   const el = document.getElementById('o-conn-badge');
-  el.className = 'conn-badge ' + type;
+  el.className = 'conn-badge '+type;
   document.getElementById('o-conn-text').textContent = text;
 }
+
+// expose for inline onclick
+window.resetGame = resetGame;
+window.resetScore = resetScore;
+
+
+// ======== TIMER ========
+const timers = { local: null, ai: null, online: null };
+const TIMER_MAX = 10;
+
+function startTimer(mode) {
+  stopTimer(mode);
+  let t = TIMER_MAX;
+  updateTimerUI(mode, t);
+  timers[mode] = setInterval(() => {
+    t--;
+    updateTimerUI(mode, t);
+    if (t <= 0) {
+      stopTimer(mode);
+      autoPlay(mode);
+    }
+  }, 1000);
+}
+
+function stopTimer(mode) {
+  if (timers[mode]) { clearInterval(timers[mode]); timers[mode] = null; }
+  updateTimerUI(mode, TIMER_MAX);
+}
+
+function updateTimerUI(mode, t) {
+  const prefix = mode[0];
+  const numEl = document.getElementById(prefix+'-timer');
+  const barEl = document.getElementById(prefix+'-timer-bar');
+  if (!numEl || !barEl) return;
+  numEl.textContent = t;
+  const pct = (t / TIMER_MAX) * 100;
+  barEl.style.width = pct + '%';
+  numEl.className = 'timer-num';
+  if (t <= 3) {
+    numEl.classList.add('danger');
+    barEl.style.background = 'var(--neon-o)';
+  } else if (t <= 6) {
+    numEl.classList.add('warning');
+    barEl.style.background = 'var(--neon-yellow)';
+  } else {
+    numEl.classList.add('normal');
+    barEl.style.background = 'var(--neon-green)';
+  }
+}
+
+function autoPlay(mode) {
+  const s = states[mode];
+  if (s.over) return;
+  // Pick random empty cell
+  const empty = s.board.map((v,i) => v ? null : i).filter(i => i !== null);
+  if (empty.length === 0) return;
+  const i = empty[Math.floor(Math.random() * empty.length)];
+  if (mode === 'online') {
+    if (s.current === onlineState.mySymbol) onlinePlay(i);
+  } else {
+    const cellEl = document.getElementById(mode[0]+'-board').children[i];
+    handleClick(mode, i, cellEl);
+  }
+}
+
+// ======== NAVIGATION ========
+window.goToModeSelect = function() {
+  ['page-landing','page-mode','page-game'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById('page-mode').classList.add('active');
+  SFX.click();
+};
+
+window.goToGame = function(mode) {
+  ['page-landing','page-mode','page-game'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById('page-game').classList.add('active');
+  switchTab(mode);
+  SFX.click();
+};
+
+window.goBack = function(to) {
+  ['page-landing','page-mode','page-game'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById('page-'+to).classList.add('active');
+  SFX.click();
+};
 
 // ======== INIT ========
 renderBoard('local');
